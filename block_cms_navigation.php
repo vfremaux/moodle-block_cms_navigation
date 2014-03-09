@@ -1,4 +1,28 @@
-<?php // $Id: block_cms_navigation.php,v 1.8 2008/03/23 09:11:37 julmis Exp $
+<?php
+
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Block main class.
+ *
+ * @package    block_cms_navigation
+ * @author Moodle 1.9 Janne Mikkonen
+ * @reauthor Moodle 2.x Valery Fremaux <valery.fremaux@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 if (!defined('FRONTPAGECMS')) define ('FRONTPAGECMS', 29);
 
@@ -213,6 +237,7 @@ class block_cms_navigation extends block_base {
         } else {
             if ($menus = $DB->get_records('local_cms_navi', array('course' => $coursescopeid), 'id ASC')) {
                 $menu = array_pop($menus);
+                if (!isset($this->config)) $this->config = new StdClass();
                 $this->config->menu = $menuid = $menu->id;
                 $this->instance_config_commit();
             } else {
@@ -229,7 +254,7 @@ class block_cms_navigation extends block_base {
 
         // no content here
         if (($menurequirelogin && !isloggedin()) or
-            ($menurequirelogin && isguest() && !$menuallowguest)) {
+            ($menurequirelogin && isguestuser() && !$menuallowguest)) {
               return $this->content;
         }
 
