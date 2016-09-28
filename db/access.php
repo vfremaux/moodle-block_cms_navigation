@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Block caps.
+ * Block capabilities.
  *
  * @package    block_cms_navigation
  * @author Moodle 1.9 Janne Mikkonen
