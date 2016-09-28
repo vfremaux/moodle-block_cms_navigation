@@ -19,8 +19,8 @@
  *
  * @package     block_cms_navigation
  * @category    blocks
- * @author      Valery Fremaux (valery.fremaux@gmeil.com)
- * @copyright   2013 onwards Valery Fremaux (valery.fremaux@gmeil.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2012 Valery Fremaux (http://www.mylearningfactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,10 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_cms_navigation';
 $plugin->version = 2014031000;
-$plugin->requires = 2015050500;
-$plugin->maturity = MATURITY_RC;
-$plugin->release = '2.9.0 (Build 2014021500)';
+$plugin->requires = 2015111000;
+$plugin->maturity = MATURITY_BETA;
+$plugin->release = '3.0.0 (Build 2014021500)';
 $plugin->dependencies = array('local_cms' => '2014031000');
 
 // Non moodle attributes.
-$plugin->codeincrement = '2.9.0000';
+$plugin->codeincrement = '3.0.0000';
