@@ -14,14 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Version details.
+ *
+ * @package     block_cms_navigation
+ * @category    blocks
+ * @author      Moodle 1.9 Janne Mikkonen
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2010 onwards Valery Fremaux (http://www.mylearningfactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_cms_navigation';
-$plugin->version = 2014031000;
-$plugin->requires = 2013040500;
+$plugin->version = 2015071000;
+$plugin->requires = 2014110400;
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '2.7.0 (Build 2014021500)';
+$plugin->release = '2.8.0 (Build 2015071000)';
 $plugin->dependencies = array('local_cms' => '2014031000');
 
 // Non moodle attributes.
-$plugin->codeincrement = '2.7.0000';
+$plugin->codeincrement = '2.8.0000';
