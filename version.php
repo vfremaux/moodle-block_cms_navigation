@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2014031000;
+$plugin->version = 2015071000;
 $plugin->requires = 2016051900;
 $plugin->maturity = MATURITY_BETA;
 $plugin->component = 'block_cms_navigation';
