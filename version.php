@@ -29,17 +29,8 @@ $plugin->version = 2014031000;
 $plugin->requires = 2017110800;
 $plugin->maturity = MATURITY_RC;
 $plugin->component = 'block_cms_navigation';
-<<<<<<< HEAD
-$plugin->version = 2014021502;
-$plugin->requires = 2012110900;
-$plugin->maturity = MATURITY_BETA;
-$plugin->release = '2.4.0 (Build 2014021500)';
-$plugin->dependencies = array('local_cms' => '2014031000');
-
-=======
 $plugin->release = '3.4.0 (Build 2014021500)';
 $plugin->dependencies = array('local_cms' => '2014031000');
 
 // Non moodle attributes.
 $plugin->codeincrement = '3.4.0000';
->>>>>>> MOODLE_34_STABLE
