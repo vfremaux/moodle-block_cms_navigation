@@ -143,9 +143,13 @@ class block_cms_navigation extends block_base {
         $pagename = optional_param('page', '', PARAM_FILE);
         $pageid   = optional_param('pid', 0, PARAM_INT);
 
-        if (defined('SITEID') && ($systemcontext->id == $this->instance->parentcontextid) && $CFG->slasharguments ) {
-            // Support sitelevel slasharguments
-            // in form /index.php/<pagename>
+        if (defined('SITEID') &&
+                ($systemcontext->id == $this->instance->parentcontextid) &&
+                        $CFG->slasharguments ) {
+            /*
+             * Support sitelevel slasharguments.
+             * in form /index.php/<pagename>
+             */
             $relativepath = get_file_argument(basename($_SERVER['SCRIPT_FILENAME']));
             if (preg_match("/^\/documentation(\/[a-z0-9\_\-]+)/i", $relativepath) ) {
                 $args = explode("/", $relativepath);
@@ -201,19 +205,16 @@ class block_cms_navigation extends block_base {
             $toolbar = '';
 
             $stradd = get_string('add');
-            $addlink = new moodle_url('/local/cms/pageadd.php', array('id' => $pageid, 'sesskey' => sesskey(), 'parentid' => 0, 'course' => $COURSE->id));
-            $addicon = $OUTPUT->pix_url('add', 'local_cms');
-            $toolbar .=  '<a href="'. $addlink .'" target="reorder"><img src="'. $addicon .'"'
-                         .  ' width="11" height="11" alt="'. $stradd .'"'
-                         . ' title="'. $stradd .'" /></a>';
+            $params = array('id' => $pageid, 'sesskey' => sesskey(), 'parentid' => 0, 'course' => $COURSE->id);
+            $addlink = new moodle_url('/local/cms/pageadd.php', $params);
+            $addicon = $OUTPUT->pix_icon('add', $stradd, 'local_cms');
+            $toolbar .=  '<a title="'.$stradd.'" href="'.$addlink.'" target="reorder">'.$addicon.'</a>';
 
             $strreorder = get_string('reorder', 'block_cms_navigation');
             $reorderlink = new moodle_url('/local/cms/reorder.php', array('source' => $pageid, 'sesskey' => sesskey()));
-            $reordericon = $OUTPUT->pix_url('t/move');
+            $reordericon = $OUTPUT->pix_icon('t/move', $strreorder, 'core');
 
-            $toolbar .=  ' <a href="'. $reorderlink .'" target="reorder"><img src="'. $reordericon .'"'
-                         .  ' width="11" height="11" alt="'. $strreorder .'"'
-                         . ' title="'. $strreorder .'" /></a>';
+            $toolbar .=  ' <a title="'.$strreorder.'" href="'.$reorderlink.'" target="reorder">'.$reordericon.'</a>';
 
             $this->content->footer = $toolbar;
         }
