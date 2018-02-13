@@ -58,11 +58,12 @@ class block_cms_navigation_edit_form extends block_edit_form {
         $mform->addElement('text', 'config_title', get_string('menuname', 'block_cms_navigation'), array('size' => 40));
         $mform->setType('config_title', PARAM_CLEANHTML);
 
-        $pixmenus = $OUTPUT->pix_url('menus', 'local_cms');
-        $pixpages = $OUTPUT->pix_url('pages', 'local_cms');
-
         $strmanagepages = get_string('managepages', 'block_cms_navigation');
         $strmanagemenus = get_string('managemenus', 'block_cms_navigation');
+
+        $pixmenus = $OUTPUT->pix_icon('menus', $strmanagemenus, 'local_cms');
+        $pixpages = $OUTPUT->pix_icon('pages', $strmanagepages, 'local_cms');
+
         $managemenuslink = new moodle_url('/local/cms/menus.php', array('course' => $COURSE->id, 'sesskey' => sesskey()));
         $managepageslink = new moodle_url('/local/cms/pages.php', array('course' => $COURSE->id, 'sesskey' => sesskey()));
 
@@ -72,12 +73,17 @@ class block_cms_navigation_edit_form extends block_edit_form {
 
         $str = '<center><table width="70%">';
         $str .= '<tr>';
-        $str .= '<td align="center"><a href="'.$managemenuslink.'" title="'.$strmanagemenus.'">
-                <img src="'.$pixmenus.'" width="50" height="50" alt="'.$strmanagemenus.'" border="0" /></a><br />
-                <a href="'.$managemenuslink.'">'.$strmanagemenus.'</a></td>';
-        $str .= '<td align="center"><a href="'.$managepageslink.'" title="'.$strmanagepages.'">
-                <img src="'.$pixpages.'" width="50" height="50" alt="'.$strmanagepages.'" border="0" /></a><br />
-                <a href="'.$managepageslink.'">'.$strmanagepages.'</a></td>';
+
+        $str .= '<td align="center">';
+        $str .= '<a href="'.$managemenuslink.'" title="'.$strmanagemenus.'">'.$pixmenus.'</a><br />';
+        $str .= '<a href="'.$managemenuslink.'">'.$strmanagemenus.'</a>';
+        $str .= '</td>';
+
+        $str .= '<td align="center">';
+        $str .= '<a href="'.$managepageslink.'" title="'.$strmanagepages.'">'.$pixpages.'</a><br />';
+        $str .= '<a href="'.$managepageslink.'">'.$strmanagepages.'</a>';
+        $str .= '</td>';
+
         $str .= '</tr>';
         $str .= '</table></center>';
 
