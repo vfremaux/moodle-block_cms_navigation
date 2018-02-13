@@ -2,7 +2,7 @@
 
 div.cms-navi {
     margin-left:0px;
-    line-height: 18px;
+    line-height: 1.5em;
 }
 
 div.cms-warning {
@@ -64,4 +64,52 @@ li.cms-inactive {
 #left-column .content .cms-navi li.level3on{
     padding-left:13px;
     list-style-position:outside;
+}
+
+.block_cms_navigation li{
+    list-style-position: inside;
+}
+
+.cms-level1on {
+}
+
+.cms-level2on{
+    margin-left:10px;
+    font-size:0.95em;
+}
+
+.cms-level3on{
+    margin-left:20px;
+    font-size:0.9em;
+}
+
+.cms-level4on{
+    margin-left:30px;
+    font-size:0.85em;
+}
+
+.cms-level1off {
+    opacity:0.5;
+    -moz-opacity:0.5;
+}
+
+.cms-level2off{
+    opacity:0.5;
+    -moz-opacity:0.5;
+    margin-left:10px;
+    font-size:0.95em;
+}
+
+.cms-level3off{
+    opacity:0.5;
+    -moz-opacity:0.5;
+    margin-left:20px;
+    font-size:0.9em;
+}
+
+.cms-level4off{
+    opacity:0.5;
+    -moz-opacity:0.5;
+    margin-left:30px;
+    font-size:0.85em;
 }

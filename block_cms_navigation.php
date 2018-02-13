@@ -1,18 +1,53 @@
-<?php // $Id: block_cms_navigation.php,v 1.8 2008/03/23 09:11:37 julmis Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Block main class.
+ *
+ * @package    block_cms_navigation
+ * @category   blocks
+ * @author Moodle 1.9 Janne Mikkonen
+ * @author Moodle 2.x Valery Fremaux <valery.fremaux@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/cms/locallib.php');
 
 if (!defined('FRONTPAGECMS')) define ('FRONTPAGECMS', 29);
 
 class block_cms_navigation extends block_base {
 
+    // The pages after tree binding
+    private $rootnode;
+
+    // The raw set of pages, untreed.
+    private $navipages;
+
+    // Global settings for local cms plugin
+    private $settings;
+
     function init() {
         $this->title = get_string('blocktitle', 'block_cms_navigation');
         $this->content_type = BLOCK_TYPE_TEXT;
-        $this->navidata = NULL;
+        $this->navidatapages = null;
     }
 
     function applicable_formats() {
-        return array('all' => true, 'admin' => false);
-        return array('site' => true, 'page' => true, 'admin' => true, 'topics' => true, 'weeks' => true);
+        return array('all' => true);
     }
 
     function specialization() {
@@ -25,12 +60,14 @@ class block_cms_navigation extends block_base {
     }
 
     function is_login_required ( $menuid ) {
-    	global $DB;
+        global $DB;
+
         return $DB->get_field('local_cms_navi', 'requirelogin', array('id' => $menuid));
     }
 
     function is_guest_allowed ( $menuid ) {
-    	global $DB;
+        global $DB;
+
         return $DB->get_field('local_cms_navi', 'allowguest', array('id' => $menuid));
     }
 
@@ -47,164 +84,77 @@ class block_cms_navigation extends block_base {
         return false;
     }
 
-    function get_css_classname (&$path, &$navi) {
+    function build_menu_tree() {
         global $CFG;
 
-        $frontpagelayout = (isloggedin() && !empty($CFG->frontpageloggedin))
-                            ? $CFG->frontpageloggedin
-                            : $CFG->frontpage;
-
-        $frontpagecheck = false;
-        if ( $frontpagelayout == FRONTPAGECMS ) {
-            if ( end($path) == 0 && $navi->isfp != 0 && empty($GLOBALS['pagename']) ) {
-                $frontpagecheck = true;
-            }
+        if (empty($this->config->menu)) {
+            return;
         }
 
-        if ( ($navi->pageid == end($path)) or $frontpagecheck ) {
-            $class = 'class="cms-active-1';
-        } else if ( in_array($navi->pageid, $path) ) {
-            $class = 'class="cms-active-2';
-        } else {
-            $class = 'class="cms-inactive';
-        }
-        return $class;
-    }
-
-    function construct_tree_menu ($parentid, $path, $menuid, $level=1) {
-        global $CFG, $USER, $SITE;
-        static $top;
-
-        if ( empty($top) ) {
-            $top = array();
+        if (empty($this->navipages)) {
+            $this->navipages = cms_get_visible_pages($this->config->menu);
         }
 
-        if (! empty($this->navidata) ) {
+        if (empty($this->navipages)) {
+            // No pages in spite of having tried to get them.
+            return;
+        }
 
-            $this->content->text .= '<ul class="cms-navi-list">' . "\n";
+        $this->rootnode = new StdClass();
+        $this->rootnode->children = array();
 
-            foreach($this->navidata as $key => $navi) {
-
-                if ( $navi->parentid == $parentid ) {
-                    array_push($top, $navi->pageid);
-
-                    $class = $this->get_css_classname($path, $navi);
-                    $class .= ' level'.$level.'on"';
-
-                    if ( empty($navi->url) ) {
-                        // If the admin has hacked the core Moodle code then he will want the links
-                        // to point to the site index.php page for site pages
-                        if (empty($navi->pagename)) {
-                            $baseurl = $CFG->wwwroot .'/?pid='. (empty($navi->parentid)? '' : $navi->parentid . ',') . $navi->pageid;
-                        } else {
-                            $tempurl = (!$CFG->slasharguments)
-                                        ? $CFG->wwwroot.'/index.php?page='.$navi->pagename
-                                        : $CFG->wwwroot.'/index.php/documentation/'. $navi->pagename;
-                        $baseurl = ($navi->course == SITEID)
-                                    ? ( $tempurl )
-                                    // TODO: should the URL below be rendered with slasharguments? 
-                                : $CFG->wwwroot.'/index.php?id='. $navi->course .'&amp;page='.$navi->pagename;
-                        }
-
-                    } else {
-                        $baseurl = $navi->url;
-                    }
-
-                    $target = (!empty($navi->url) && !empty($navi->target)) ? ' target="'. $navi->target .'"' : '';
-
-                    $this->content->text .= '<li '. $class .'><a '.
-                                            ' href="'. $baseurl . '"'. $target .
-                                            '>' . stripslashes($navi->title) .
-                                        '</a>' . "\n";
-                    if ( in_array($navi->pageid, $path) or (empty($path) && $navi->isfp) ) {
-                        $this->construct_tree_menu($navi->pageid, $path, $menuid, $level+1);
-                    }
-
-                    $this->content->text .= '</li>' . "\n";
-
-                    array_pop($top);
-
+        foreach ($this->navipages as $pageid => &$node) {
+            if ($node->parentid) {
+                if (!isset($this->navipages[$node->parentid])) {
+                    $this->navipages[$node->parentid] = new StdClass();
                 }
+                if (!isset($this->navipages[$node->parentid]->children)) {
+                    $this->navipages[$node->parentid]->children = array();
+                }
+                $arr = $this->navipages[$node->parentid]->children;
+                if (!array_key_exists($pageid, $arr)) {
+                    $this->navipages[$node->parentid]->children[$pageid] = &$node;
+                }
+            } else {
+                $this->rootnode->children[$pageid] = &$node;
             }
-            $this->content->text .= '</ul>' . "\n";
         }
-
     }
 
     /**
-     * Check if page have parent id.
-     *
-     * As navidata array already exists we can use it as searcable
-     * index because of its structure ( array of objects where pageid
-     * is also an array key ).
-     * @param int $pageid
-     * @param bool $returnid
-     * @return mixed
+     * get master content for the block.
      */
-    function has_parent ( $pageid, $returnid=FALSE) {
-
-        $pageid = intval($pageid);
-
-        if ( !empty($this->navidata[$pageid]) ) {
-            $page = $this->navidata[$pageid];
-                if ( $page->parentid != 0 ) {
-                if ( !$returnid ) {
-                    return true;
-                } else {
-                    // return first item.
-                    return (int) $page->parentid;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Create a id path from requested page all away to root level.
-     *
-     * @param int $pageid;
-     * @return array
-     */
-    function get_path($pageid) {
-
-        $pagearray = array();
-        array_push($pagearray, $pageid);
-        while ( $pageid = $this->has_parent($pageid, true) ) {
-            $pagearray[$pageid] = $pageid;
-        }
-        return array_reverse($pagearray);
-
-    }
-
-	/**
-	*
-	*
-	*
-	*/
     function get_content() {
-        global $CFG, $USER, $SITE, $COURSE, $OUTPUT, $DB;
-        
-        $systemcontext = context_system::instance();
+        global $CFG, $USER, $SITE, $COURSE, $OUTPUT, $DB, $PAGE;
 
-        if ($this->content !== NULL) {
+        $systemcontext = context_system::instance();
+        $renderer = $PAGE->get_renderer('block_cms_navigation');
+
+        if ($this->content !== null) {
             return $this->content;
+        }
+
+        $this->settings = get_config('local_cms');
+        if (empty($this->settings->virtual_path)) {
+            set_config('virtual_path', '/documentation', 'local_cms');
+            $this->settings->virtual_path = '/documentation';
         }
 
         $pagename = optional_param('page', '', PARAM_FILE);
         $pageid   = optional_param('pid', 0, PARAM_INT);
 
-        if ( defined('SITEID') && ($systemcontext->id == $this->instance->parentcontextid) && $CFG->slasharguments ) {
+        if (defined('SITEID') && ($systemcontext->id == $this->instance->parentcontextid) && $CFG->slasharguments ) {
             // Support sitelevel slasharguments
             // in form /index.php/<pagename>
             $relativepath = get_file_argument(basename($_SERVER['SCRIPT_FILENAME']));
-            if ( preg_match("/^\/documentation(\/[a-z0-9\_\-]+)/i", $relativepath) ) {
+            if (preg_match("/^\/documentation(\/[a-z0-9\_\-]+)/i", $relativepath) ) {
                 $args = explode("/", $relativepath);
                 $pagename = clean_param($args[2], PARAM_FILE);
             }
             unset($args, $relativepath);
         }
 
-        $coursescopeid = (empty($this->config->forceglobal)) ? $COURSE->id : SITEID ;
+        $coursescopeid = (empty($this->config->forceglobal)) ? $COURSE->id : SITEID;
 
         // set menuid according to block configuration or if no menu has been configured yet use
         // the first available menu if it exists
@@ -213,13 +163,14 @@ class block_cms_navigation extends block_base {
         } else {
             if ($menus = $DB->get_records('local_cms_navi', array('course' => $coursescopeid), 'id ASC')) {
                 $menu = array_pop($menus);
+                if (!isset($this->config)) $this->config = new StdClass();
                 $this->config->menu = $menuid = $menu->id;
                 $this->instance_config_commit();
             } else {
                 $menuid = 0;
             }
         }
-        
+
         $this->content = new stdClass;
         $this->content->text = '';
         $this->content->footer = '';
@@ -229,61 +180,35 @@ class block_cms_navigation extends block_base {
 
         // no content here
         if (($menurequirelogin && !isloggedin()) or
-            ($menurequirelogin && isguest() && !$menuallowguest)) {
+            ($menurequirelogin && isguestuser() && !$menuallowguest)) {
               return $this->content;
         }
 
-        $sql = "SELECT 
-                    n.pageid, 
-                    n.parentid, 
-                    n.title, 
-                    n.isfp, 
-                    n.pagename,
-                    n.url, 
-                    n.target, 
-                    p.publish, 
-                    cn.requirelogin, 
-                    cn.course
-                FROM 
-                    {local_cms_navi_data} n,
-                    {local_cms_pages} p,
-                    {local_cms_navi} cn
-                WHERE 
-                    n.pageid = p.id AND 
-                    p.publish = 1 AND 
-                    n.naviid = cn.id AND 
-                    (cn.id = ?) AND 
-                    n.showinmenu = '1'
-                ORDER BY 
-                    sortorder
-        ";
-
-        $this->navidata = $DB->get_records_sql($sql, array($menuid));
+        $this->navidatapages = cms_get_visible_pages(@$this->config->menu);
 
         if ( empty($pageid) && !empty($pagename) ) {
             $pageid = $DB->get_field('local_cms_navi_data', 'pageid', array('pagename' => $pagename, 'naviid' => $menuid));
         }
 
-        $path = $this->get_path($pageid);
-
         // Wrap it inside div element which width you can control
         // with CSS styles in styles.php file.
         $this->content->text .= "\n" . '<div class="cms-navi">' . "\n";
-        $this->construct_tree_menu(0, $path, $menuid);
+        $this->build_menu_tree();
+        $this->content->text .= $renderer->render_tree($this->rootnode);
         $this->content->text .= '</div>'."\n";
 
         if (!empty($USER->editing) and !empty($pageid)) {
             $toolbar = '';
 
-            $stradd     = get_string('add');
-            $addlink = $CFG->wwwroot .'/local/cms/pageadd.php?id='. $pageid .'&amp;'.'sesskey='.sesskey().'&amp;parentid=0&amp;course=' . $COURSE->id .'';
+            $stradd = get_string('add');
+            $addlink = new moodle_url('/local/cms/pageadd.php', array('id' => $pageid, 'sesskey' => sesskey(), 'parentid' => 0, 'course' => $COURSE->id));
             $addicon = $OUTPUT->pix_url('add', 'local_cms');
             $toolbar .=  '<a href="'. $addlink .'" target="reorder"><img src="'. $addicon .'"'
                          .  ' width="11" height="11" alt="'. $stradd .'"'
                          . ' title="'. $stradd .'" /></a>';
 
             $strreorder = get_string('reorder', 'block_cms_navigation');
-            $reorderlink = $CFG->wwwroot .'/local/cms/reorder.php?source='.$pageid.'&amp;sesskey='.sesskey();
+            $reorderlink = new moodle_url('/local/cms/reorder.php', array('source' => $pageid, 'sesskey' => sesskey()));
             $reordericon = $OUTPUT->pix_url('t/move');
 
             $toolbar .=  ' <a href="'. $reorderlink .'" target="reorder"><img src="'. $reordericon .'"'

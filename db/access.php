@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Activity modules block caps.
+ * Block capabilities.
  *
- * @package    block_activity_modules
- * @copyright  Valery Fremaux <valery.fremaux@gmail.com>
+ * @package    block_cms_navigation
+ * @author Moodle 1.9 Janne Mikkonen
+ * @reauthor Moodle 2.x Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
