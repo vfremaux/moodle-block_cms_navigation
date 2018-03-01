@@ -15,22 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
- *
- * @package    block_cms_navigation
- * @category   blocks
- * @author     valery fremaux (valery.fremaux@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2015 Valery Fremaux (valery.fremaux@gmail.com)
+ * @package block_cms_navigation
+ * @category blocks
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015071000;
-$plugin->requires = 2017050500;
-$plugin->maturity = MATURITY_RC;
-$plugin->component = 'block_cms_navigation';
-$plugin->release = '3.3.0 (Build 2015071000)';
-$plugin->dependencies = array('local_cms' => '2014031000');
-
-// Non moodle attributes.
-$plugin->codeincrement = '3.3.0000';
+/**
+ * This function is not implemented in this plugin, but is needed to mark
+ * the vf documentation custom volume availability.
+ */
+function block_cms_navigation_supports_feature($feature) {
+    assert(1);
+}
