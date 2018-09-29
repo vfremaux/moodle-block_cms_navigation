@@ -172,6 +172,8 @@ class block_cms_navigation extends block_base {
                 $this->instance_config_commit();
             } else {
                 $menuid = 0;
+                $this->content = new StdClass;
+                $this->content->text = $OUTPUT->notification('nomenus', 'block_cms_navigation');
             }
         }
 
