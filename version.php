@@ -26,11 +26,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2015071000;
-$plugin->requires = 2018042700;
+$plugin->requires = 2018112800;
 $plugin->maturity = MATURITY_RC;
 $plugin->component = 'block_cms_navigation';
-$plugin->release = '3.5.0 (Build 2015071000)';
+$plugin->release = '3.6.0 (Build 2015071000)';
 $plugin->dependencies = array('local_cms' => '2014031000');
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.5.0000';
+$plugin->codeincrement = '3.6.0000';
