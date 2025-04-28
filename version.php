@@ -18,20 +18,18 @@
  * Version details
  *
  * @package    block_cms_navigation
- * @category   blocks
  * @author     valery fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015071000;
-$plugin->requires = 2022041200;
+$plugin->version = 2025011400;
+$plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_RC;
 $plugin->component = 'block_cms_navigation';
-$plugin->release = '4.0.0 (Build 2015071000)';
-$plugin->supported = [40,40];
+$plugin->release = '4.5.0 (Build 2025011400)';
 $plugin->dependencies = array('local_cms' => '2014031000');
 
 // Non moodle attributes.
-$plugin->codeincrement = '4.0.0000';
+$plugin->codeincrement = '4.5.0001';

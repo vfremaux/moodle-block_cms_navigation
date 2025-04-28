@@ -101,22 +101,23 @@ class block_cms_navigation extends block_base {
         }
 
         $this->rootnode = new StdClass();
-        $this->rootnode->children = array();
+        $this->rootnode->children = [];
 
-        foreach ($this->navipages as $pageid => &$node) {
+        foreach ($this->navipages as $pageid => $node) {
             if ($node->parentid) {
                 if (!isset($this->navipages[$node->parentid])) {
                     $this->navipages[$node->parentid] = new StdClass();
                 }
                 if (!isset($this->navipages[$node->parentid]->children)) {
-                    $this->navipages[$node->parentid]->children = array();
+                    $this->navipages[$node->parentid]->children = [];
                 }
                 $arr = $this->navipages[$node->parentid]->children;
                 if (!array_key_exists($pageid, $arr)) {
-                    $this->navipages[$node->parentid]->children[$pageid] = &$node;
+                    $this->navipages[$node->parentid]->children[$pageid] = $node;
                 }
             } else {
-                $this->rootnode->children[$pageid] = &$node;
+                // Top level page.
+                $this->rootnode->children[$pageid] = $node;
             }
         }
     }
@@ -165,7 +166,7 @@ class block_cms_navigation extends block_base {
         if (!empty($this->config->menu)) {
             $menuid = intval($this->config->menu);
         } else {
-            if ($menus = $DB->get_records('local_cms_navi', array('course' => $coursescopeid), 'id ASC')) {
+            if ($menus = $DB->get_records('local_cms_navi', ['course' => $coursescopeid], 'id ASC')) {
                 $menu = array_pop($menus);
                 if (!isset($this->config)) $this->config = new StdClass();
                 $this->config->menu = $menuid = $menu->id;
@@ -185,7 +186,7 @@ class block_cms_navigation extends block_base {
         $menuallowguest   = $this->is_guest_allowed($menuid);
 
         // no content here
-        if (($menurequirelogin && !isloggedin()) or
+        if (($menurequirelogin && !isloggedin()) ||
             ($menurequirelogin && isguestuser() && !$menuallowguest)) {
               return $this->content;
         }
@@ -193,7 +194,7 @@ class block_cms_navigation extends block_base {
         $this->navidatapages = cms_get_visible_pages(@$this->config->menu);
 
         if ( empty($pageid) && !empty($pagename) ) {
-            $pageid = $DB->get_field('local_cms_navi_data', 'pageid', array('pagename' => $pagename, 'naviid' => $menuid));
+            $pageid = $DB->get_field('local_cms_navi_data', 'pageid', ['pagename' => $pagename, 'naviid' => $menuid]);
         }
 
         // Wrap it inside div element which width you can control
@@ -203,7 +204,7 @@ class block_cms_navigation extends block_base {
         $this->content->text .= $renderer->render_tree($this->rootnode);
         $this->content->text .= '</div>'."\n";
 
-        if (!empty($USER->editing) and !empty($pageid)) {
+        if (!empty($USER->editing) && !empty($pageid)) {
             $toolbar = '';
 
             $stradd = get_string('add');
